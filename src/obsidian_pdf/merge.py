@@ -12,10 +12,20 @@ def collect_markdown_files(folder: Path) -> list[Path]:
     )
 
 
-def build_merged_markdown(folder: Path) -> str:
+def build_merged_markdown(folder: Path, verbose: bool = False) -> str:
+    md_files = collect_markdown_files(folder)
+
+    if verbose:
+        print(f"[INFO] Found {len(md_files)} markdown file(s)")
+        for md_file in md_files:
+            print(f"[INFO]  - {md_file.relative_to(folder)}")
+
     chunks: list[str] = []
 
-    for md_file in collect_markdown_files(folder):
+    for md_file in md_files:
+        if verbose:
+            print(f"[INFO] Processing: {md_file.relative_to(folder)}")
+
         raw = md_file.read_text(encoding="utf-8")
         normalized = normalize_obsidian_markdown(raw, md_file, folder)
 

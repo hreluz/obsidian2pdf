@@ -11,20 +11,18 @@ def render_pdf(
     resource_root: Path,
     toc: bool = False,
     pdf_engine: str = "pdflatex",
+    verbose: bool = False,
 ) -> None:
     pandoc_bin = shutil.which("pandoc")
     if pandoc_bin is None:
         raise SystemExit(
             "Pandoc is not installed or not in PATH. Install it first, for example: brew install pandoc"
         )
-    
+
     if shutil.which(pdf_engine) is None:
-        fallback = "pdflatex"
-        if shutil.which(fallback):
-            print(f"Warning: {pdf_engine} not found, using {fallback}")
-            pdf_engine = fallback
-        else:
-            raise SystemExit(f"No PDF engine found. Install pdflatex or tectonic.")
+        raise SystemExit(
+            f"PDF engine '{pdf_engine}' is not installed or not in PATH."
+        )
 
     cmd = [
         pandoc_bin,
@@ -38,5 +36,9 @@ def render_pdf(
 
     if toc:
         cmd.append("--toc")
+
+    if verbose:
+        print("[INFO] Running Pandoc command:")
+        print("[INFO] " + " ".join(cmd))
 
     subprocess.run(cmd, check=True)

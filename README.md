@@ -56,13 +56,13 @@ pip install -e .
 obsidian-pdf ./MyBook ./book.pdf
 ```
 
-### With TOC
+### With Table of Contents
 
 ``` bash
 obsidian-pdf ./MyBook ./book.pdf --toc
 ```
 
-### With engine
+### With PDF engine
 
 ``` bash
 obsidian-pdf ./MyBook ./book.pdf --engine pdflatex
@@ -73,21 +73,27 @@ or
 ``` bash
 obsidian-pdf ./MyBook ./book.pdf --engine tectonic
 ```
+### Verbose (debug mode)
+
+``` bash
+obsidian-pdf ./MyBook ./book.pdf --verbose
+```
 
 ### Combined
 
 ``` bash
-obsidian-pdf ./MyBook ./book.pdf --toc --engine tectonic
+obsidian-pdf ./MyBook ./book.pdf --toc --engine tectonic --verbose
 ```
 
 ------------------------------------------------------------------------
 
 ## ⚙️ CLI Options
 
-  Option     Description
-  ---------- --------------------------------------------
-  --toc      Generate a table of contents
-  --engine   Choose PDF engine (`pdflatex`, `tectonic`)
+| Option      | Description                                      |
+|-------------|--------------------------------------------------|
+| `--toc`     | Generate a table of contents                     |
+| `--engine`  | Choose PDF engine (`pdflatex`, `tectonic`)       |
+| `--verbose` | Show detailed logs and debug information         |
 
 ------------------------------------------------------------------------
 
