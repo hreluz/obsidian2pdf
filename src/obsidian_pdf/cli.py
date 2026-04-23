@@ -12,8 +12,27 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Convert an Obsidian folder into a single PDF."
     )
-    parser.add_argument("input_folder", type=Path, help="Folder containing Obsidian notes")
-    parser.add_argument("output_pdf", type=Path, help="Target PDF file")
+    parser.add_argument(
+        "input_folder",
+        type=Path,
+        help="Folder containing Obsidian notes",
+    )
+    parser.add_argument(
+        "output_pdf",
+        type=Path,
+        help="Target PDF file",
+    )
+    parser.add_argument(
+        "--toc",
+        action="store_true",
+        help="Include a table of contents",
+    )
+    parser.add_argument(
+        "--engine",
+        default="pdflatex",
+        help="PDF engine to use (example: pdflatex, tectonic)",
+    )
+
     args = parser.parse_args()
 
     folder = args.input_folder.resolve()
@@ -27,6 +46,12 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         temp_md = Path(tmpdir) / "merged.md"
         temp_md.write_text(merged, encoding="utf-8")
-        render_pdf(temp_md, output_pdf, folder)
+        render_pdf(
+            input_md=temp_md,
+            output_pdf=output_pdf,
+            resource_root=folder,
+            toc=args.toc,
+            pdf_engine=args.engine,
+        )
 
     print(f"Created: {output_pdf}")

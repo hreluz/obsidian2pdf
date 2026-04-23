@@ -12,7 +12,8 @@ Python + Pandoc.
     -   `![[image.png]]`
     -   `[[Wiki Links]]`
 -   Automatic merging of notes
--   Table of contents support
+-   Optional table of contents (`--toc`)
+-   Configurable PDF engine (`--engine`)
 -   Works as a CLI tool
 -   Extensible (ordering, styling, metadata)
 
@@ -22,32 +23,25 @@ Python + Pandoc.
 
 -   Python 3.13+
 -   Pandoc
--   A PDF engine (BasicTeX recommended on macOS)
+-   A PDF engine:
+    -   macOS: BasicTeX (`pdflatex`)
+    -   or alternatives like `tectonic`
 
 ------------------------------------------------------------------------
 
 ## 📦 Installation
 
-### Clone the repo
-
 ``` bash
 git clone <your-repo-url>
 cd obsidian2pdf
-```
 
-### Setup environment
-
-``` bash
 python3.13 -m venv .env
 source .env/bin/activate
 pip install --upgrade pip
-```
 
-### Install dependencies
-
-``` bash
 brew install pandoc
 brew install --cask basictex
+
 pip install python-frontmatter
 pip install -e .
 ```
@@ -56,15 +50,44 @@ pip install -e .
 
 ## 🧪 Usage
 
+### Basic
+
 ``` bash
 obsidian-pdf ./MyBook ./book.pdf
 ```
 
-With options:
+### With TOC
+
+``` bash
+obsidian-pdf ./MyBook ./book.pdf --toc
+```
+
+### With engine
+
+``` bash
+obsidian-pdf ./MyBook ./book.pdf --engine pdflatex
+```
+
+or
+
+``` bash
+obsidian-pdf ./MyBook ./book.pdf --engine tectonic
+```
+
+### Combined
 
 ``` bash
 obsidian-pdf ./MyBook ./book.pdf --toc --engine tectonic
 ```
+
+------------------------------------------------------------------------
+
+## ⚙️ CLI Options
+
+  Option     Description
+  ---------- --------------------------------------------
+  --toc      Generate a table of contents
+  --engine   Choose PDF engine (`pdflatex`, `tectonic`)
 
 ------------------------------------------------------------------------
 
@@ -96,9 +119,29 @@ PYTHONPATH=src python -m obsidian_pdf.cli ./MyBook ./book.pdf
 
 ## 🐞 Troubleshooting
 
--   Install pandoc if missing: brew install pandoc
--   Install pdflatex: brew install --cask basictex
--   Reinstall package: pip install -e .
+Install pandoc:
+
+``` bash
+brew install pandoc
+```
+
+Install PDF engine:
+
+``` bash
+brew install --cask basictex
+```
+
+or
+
+``` bash
+brew install tectonic
+```
+
+Reinstall project:
+
+``` bash
+pip install -e .
+```
 
 ------------------------------------------------------------------------
 
