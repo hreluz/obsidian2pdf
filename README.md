@@ -16,6 +16,7 @@ Python + Pandoc.
 -   Configurable PDF engine (`--engine`)
 -   Works as a CLI tool
 -   Extensible (ordering, styling, metadata)
+-   Frontmatter-based ordering (`order`)
 
 ------------------------------------------------------------------------
 
@@ -106,6 +107,37 @@ obsidian-pdf ./MyBook ./book.pdf --toc --engine tectonic --verbose
         └─ images/ 
             └─ cover.png
 ```
+
+------------------------------------------------------------------------
+
+## 📑 Ordering Notes (Frontmatter)
+
+You can control the order of notes in the final PDF using **frontmatter**.
+
+### Example
+
+```md
+---
+order: 1
+title: Chapter One
+---
+
+Content here.
+```
+
+### How it works
+
+- Notes are sorted by `order`
+- Lower numbers appear first
+- If `order` is missing → file goes to the end
+- If multiple files have the same `order` → fallback to filename
+- `title` overrides the displayed heading in the PDF
+
+### Important rules
+
+- Frontmatter must be at the **top of the file**
+- Must be wrapped with `---`
+- This metadata is **not included in the PDF**
 
 ------------------------------------------------------------------------
 

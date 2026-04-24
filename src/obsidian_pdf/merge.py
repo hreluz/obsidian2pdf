@@ -1,15 +1,38 @@
 from __future__ import annotations
 
 from pathlib import Path
+import frontmatter
 
 from .obsidian import normalize_obsidian_markdown
 
 
 def collect_markdown_files(folder: Path) -> list[Path]:
-    return sorted(
-        [p for p in folder.rglob("*.md") if p.is_file()],
-        key=lambda p: str(p.relative_to(folder)).lower(),
-    )
+    return [p for p in folder.rglob("*.md") if p.is_file()]
+
+
+def sort_files(md_files: list[Path], folder: Path, verbose: bool) -> list[Path]:
+    def get_order(file: Path):
+        try:
+            post = frontmatter.load(file)
+            order = post.metadata.get("order", 999)
+            return order
+        except Exception:
+            return 999
+
+    sorted_files = sorted(md_files, key=lambda f: (get_order(f), str(f)))
+
+    if verbose:
+        print("[INFO] File order after frontmatter sorting:")
+        for f in sorted_files:
+            try:
+                post = frontmatter.load(f)
+                order = post.metadata.get("order", "N/A")
+            except Exception:
+                order = "N/A"
+
+            print(f"[INFO]  order={order} → {f.relative_to(folder)}")
+
+    return sorted_files
 
 
 def build_merged_markdown(folder: Path, verbose: bool = False) -> str:
@@ -17,8 +40,8 @@ def build_merged_markdown(folder: Path, verbose: bool = False) -> str:
 
     if verbose:
         print(f"[INFO] Found {len(md_files)} markdown file(s)")
-        for md_file in md_files:
-            print(f"[INFO]  - {md_file.relative_to(folder)}")
+
+    md_files = sort_files(md_files, folder, verbose)
 
     chunks: list[str] = []
 
@@ -26,10 +49,19 @@ def build_merged_markdown(folder: Path, verbose: bool = False) -> str:
         if verbose:
             print(f"[INFO] Processing: {md_file.relative_to(folder)}")
 
-        raw = md_file.read_text(encoding="utf-8")
-        normalized = normalize_obsidian_markdown(raw, md_file, folder)
+        post = frontmatter.load(md_file)
 
-        title = md_file.stem.replace("-", " ").replace("_", " ")
-        chunks.append(f"# {title}\n\n{normalized.strip()}\n")
+        content = normalize_obsidian_markdown(
+            post.content,
+            md_file,
+            folder,
+        )
+
+        title = post.metadata.get(
+            "title",
+            md_file.stem.replace("-", " ").replace("_", " "),
+        )
+
+        chunks.append(f"# {title}\n\n{content.strip()}\n")
 
     return "\n\n\\newpage\n\n".join(chunks)
