@@ -14,9 +14,10 @@ Python + Pandoc.
 -   Automatic merging of notes
 -   Optional table of contents (`--toc`)
 -   Configurable PDF engine (`--engine`)
--   Works as a CLI tool
--   Extensible (ordering, styling, metadata)
+-   Verbose debugging mode (`--verbose`)
 -   Frontmatter-based ordering (`order`)
+-   Index-based ordering (`index.md`)
+-   Works as a CLI tool
 
 ------------------------------------------------------------------------
 
@@ -101,20 +102,52 @@ obsidian-pdf ./MyBook ./book.pdf --toc --engine tectonic --verbose
 ## 📁 Example Structure
 
 ```
-    MyBook/ 
-        ├─ 01-intro.md 
-        ├─ 02-chapter.md 
-        └─ images/ 
-            └─ cover.png
+    MyBook/
+    ├─ index.md
+    ├─ intro.md
+    ├─ chapter.md
+    ├─ summary.md
+    └─ images/
+        └─ cover.png
+
 ```
 
 ------------------------------------------------------------------------
 
-## 📑 Ordering Notes (Frontmatter)
+## 📑 Ordering Notes
 
-You can control the order of notes in the final PDF using **frontmatter**.
+The order of your notes in the final PDF is determined using the following priority:
 
-### Example
+1. index.md (highest priority)
+2. frontmatter (order)
+3. filename (fallback)
+
+---
+
+### 🥇 1. Using index.md (Recommended)
+
+If a file named `index.md` exists, it completely controls the order and content.
+
+Example:
+
+```md
+# My Book
+
+[[intro]]
+[[chapter]]
+[[summary]]
+```
+
+What happens:
+- Notes appear in the exact order listed
+- Only referenced notes are included
+- Missing notes show warnings in verbose mode
+
+---
+
+### 🥈 2. Using frontmatter (order)
+
+If index.md does not exist, ordering falls back to frontmatter.
 
 ```md
 ---
@@ -125,19 +158,30 @@ title: Chapter One
 Content here.
 ```
 
-### How it works
+Rules:
+- Lower number = earlier
+- Missing order = goes last
+- Same order = fallback to filename
+- title overrides PDF heading
 
-- Notes are sorted by `order`
-- Lower numbers appear first
-- If `order` is missing → file goes to the end
-- If multiple files have the same `order` → fallback to filename
-- `title` overrides the displayed heading in the PDF
+---
 
-### Important rules
+### 🥉 3. Filename ordering
 
-- Frontmatter must be at the **top of the file**
-- Must be wrapped with `---`
-- This metadata is **not included in the PDF**
+If neither index.md nor frontmatter is used:
+
+01-intro.md  
+02-chapter.md  
+
+Files are sorted alphabetically.
+
+---
+
+### 💡 Summary
+
+index.md → full control (recommended)  
+order → flexible control  
+filename → simple fallback  
 
 ------------------------------------------------------------------------
 
